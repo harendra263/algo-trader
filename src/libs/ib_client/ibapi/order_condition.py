@@ -42,9 +42,7 @@ class OrderCondition(Object):
         self.isConjunctionConnection = connector == "a"
 
     def make_fields(self):
-        flds = []
-        flds.append(comm.make_field("a" if self.isConjunctionConnection else "o"))
-        return flds
+        return [comm.make_field("a" if self.isConjunctionConnection else "o")]
  
     def __str__(self):
         return "<AND>" if self.isConjunctionConnection else "<OR>"
@@ -65,15 +63,14 @@ class ExecutionCondition(OrderCondition):
         self.symbol = decode(str, fields)
 
     def make_fields(self):
-        flds = OrderCondition.make_fields(self) + \
-            [comm.make_field(self.secType),
-            comm.make_field(self.exchange), 
-            comm.make_field(self.symbol)]
-        return flds
+        return OrderCondition.make_fields(self) + [
+            comm.make_field(self.secType),
+            comm.make_field(self.exchange),
+            comm.make_field(self.symbol),
+        ]
  
     def __str__(self):
-        return "trade occurs for " + self.symbol + " symbol on " + \
-            self.exchange + " exchange for " + self.secType + " security type"
+        return f"trade occurs for {self.symbol} symbol on {self.exchange} exchange for {self.secType} security type"
         
 
 class OperatorCondition(OrderCondition):
@@ -94,14 +91,14 @@ class OperatorCondition(OrderCondition):
         self.setValueFromString(text)
 
     def make_fields(self):
-        flds = OrderCondition.make_fields(self) + \
-            [comm.make_field(self.isMore),
-             comm.make_field(self.valueToString()), ]
-        return flds
+        return OrderCondition.make_fields(self) + [
+            comm.make_field(self.isMore),
+            comm.make_field(self.valueToString()),
+        ]
 
     def __str__(self):
         sb = ">= " if self.isMore else "<= "
-        return " %s %s" % (sb, self.valueToString())
+        return f" {sb} {self.valueToString()}"
  
 
 class MarginCondition(OperatorCondition):
@@ -113,8 +110,7 @@ class MarginCondition(OperatorCondition):
         OperatorCondition.decode(self, fields)
 
     def make_fields(self):
-        flds = OperatorCondition.make_fields(self)
-        return flds
+        return OperatorCondition.make_fields(self)
 
     def valueToString(self) -> str:
         return str(self.percent)
@@ -123,8 +119,7 @@ class MarginCondition(OperatorCondition):
         self.percent = float(text)
  
     def __str__(self):
-        return "the margin cushion percent %s " % (
-            OperatorCondition.__str__(self))
+        return f"the margin cushion percent {OperatorCondition.__str__(self)} "
  
 
 class ContractCondition(OperatorCondition):
@@ -139,14 +134,13 @@ class ContractCondition(OperatorCondition):
         self.exchange = decode(str, fields)
 
     def make_fields(self):
-        flds = OperatorCondition.make_fields(self) + \
-            [comm.make_field(self.conId),
-             comm.make_field(self.exchange), ]
-        return flds
+        return OperatorCondition.make_fields(self) + [
+            comm.make_field(self.conId),
+            comm.make_field(self.exchange),
+        ]
 
     def __str__(self):
-        return "%s on %s is %s " % (self.conId, self.exchange, 
-            OperatorCondition.__str__(self))
+        return f"{self.conId} on {self.exchange} is {OperatorCondition.__str__(self)} "
  
 
 class TimeCondition(OperatorCondition):
@@ -158,8 +152,7 @@ class TimeCondition(OperatorCondition):
         OperatorCondition.decode(self, fields)
 
     def make_fields(self):
-        flds = OperatorCondition.make_fields(self)
-        return flds
+        return OperatorCondition.make_fields(self)
 
     def valueToString(self) -> str:
         return self.time
@@ -168,7 +161,7 @@ class TimeCondition(OperatorCondition):
         self.time = text
  
     def __str__(self):
-        return "time is %s " % (OperatorCondition.__str__(self))  
+        return f"time is {OperatorCondition.__str__(self)} "  
 
                           
 class PriceCondition(ContractCondition):
@@ -195,9 +188,9 @@ class PriceCondition(ContractCondition):
         self.triggerMethod = decode(int, fields)
 
     def make_fields(self):
-        flds = ContractCondition.make_fields(self) + \
-            [comm.make_field(self.triggerMethod), ]
-        return flds
+        return ContractCondition.make_fields(self) + [
+            comm.make_field(self.triggerMethod),
+        ]
 
     def valueToString(self) -> str:
         return str(self.price)
@@ -206,9 +199,7 @@ class PriceCondition(ContractCondition):
         self.price = float(text)
  
     def __str__(self):
-        return "%s price of %s " % (
-            PriceCondition.TriggerMethodEnum.to_str(self.triggerMethod), 
-            ContractCondition.__str__(self))
+        return f"{PriceCondition.TriggerMethodEnum.to_str(self.triggerMethod)} price of {ContractCondition.__str__(self)} "
 
 
 class PercentChangeCondition(ContractCondition):
@@ -222,8 +213,7 @@ class PercentChangeCondition(ContractCondition):
         ContractCondition.decode(self, fields)
 
     def make_fields(self):
-        flds = ContractCondition.make_fields(self)
-        return flds
+        return ContractCondition.make_fields(self)
 
     def valueToString(self) -> str:
         return str(self.changePercent)
@@ -232,8 +222,7 @@ class PercentChangeCondition(ContractCondition):
         self.changePercent = float(text)
 
     def __str__(self):
-        return "percent change of %s " % (
-            ContractCondition.__str__(self))
+        return f"percent change of {ContractCondition.__str__(self)} "
   
 
 class VolumeCondition(ContractCondition):
@@ -246,8 +235,7 @@ class VolumeCondition(ContractCondition):
         ContractCondition.decode(self, fields)
 
     def make_fields(self):
-        flds = ContractCondition.make_fields(self)
-        return flds
+        return ContractCondition.make_fields(self)
 
     def valueToString(self) -> str:
         return str(self.volume)
@@ -256,8 +244,7 @@ class VolumeCondition(ContractCondition):
         self.volume = int(text)
 
     def __str__(self):
-        return "volume of %s " % (
-            ContractCondition.__str__(self))
+        return f"volume of {ContractCondition.__str__(self)} "
  
 
 def Create(condType):

@@ -294,25 +294,25 @@ class OrderDecoder(Object):
             
     def decodeDeltaNeutral(self, fields):
         if self.version >= 20:
-            deltaNeutralContractPresent = decode(bool, fields)
-            if deltaNeutralContractPresent:
+            if deltaNeutralContractPresent := decode(bool, fields):
                 self.contract.deltaNeutralContract = DeltaNeutralContract()
                 self.contract.deltaNeutralContract.conId = decode(int, fields)
                 self.contract.deltaNeutralContract.delta = decode(float, fields)
                 self.contract.deltaNeutralContract.price = decode(float, fields)
             
     def decodeAlgoParams(self, fields):
-        if self.version >= 21:
-            self.order.algoStrategy = decode(str, fields)
-            if self.order.algoStrategy:
-                algoParamsCount = decode(int, fields)
-                if algoParamsCount > 0:
-                    self.order.algoParams = []
-                    for _ in range(algoParamsCount):
-                        tagValue = TagValue()
-                        tagValue.tag = decode(str, fields)
-                        tagValue.value = decode(str, fields)
-                        self.order.algoParams.append(tagValue)
+        if self.version < 21:
+            return
+        self.order.algoStrategy = decode(str, fields)
+        if self.order.algoStrategy:
+            algoParamsCount = decode(int, fields)
+            if algoParamsCount > 0:
+                self.order.algoParams = []
+                for _ in range(algoParamsCount):
+                    tagValue = TagValue()
+                    tagValue.tag = decode(str, fields)
+                    tagValue.value = decode(str, fields)
+                    self.order.algoParams.append(tagValue)
 
     def decodeSolicited(self, fields):
         if self.version >= 33:
@@ -348,13 +348,15 @@ class OrderDecoder(Object):
             self.order.randomizePrice = decode(bool, fields)
         
     def decodePegToBenchParams(self, fields):
-        if self.serverVersion >= MIN_SERVER_VER_PEGGED_TO_BENCHMARK:
-            if self.order.orderType == "PEG BENCH":
-                self.order.referenceContractId = decode(int, fields)
-                self.order.isPeggedChangeAmountDecrease = decode(bool, fields)
-                self.order.peggedChangeAmount = decode(float, fields)
-                self.order.referenceChangeAmount = decode(float, fields)
-                self.order.referenceExchangeId = decode(str, fields)
+        if (
+            self.serverVersion >= MIN_SERVER_VER_PEGGED_TO_BENCHMARK
+            and self.order.orderType == "PEG BENCH"
+        ):
+            self.order.referenceContractId = decode(int, fields)
+            self.order.isPeggedChangeAmountDecrease = decode(bool, fields)
+            self.order.peggedChangeAmount = decode(float, fields)
+            self.order.referenceChangeAmount = decode(float, fields)
+            self.order.referenceExchangeId = decode(str, fields)
         
     def decodeConditions(self, fields):
         if self.serverVersion >= MIN_SERVER_VER_PEGGED_TO_BENCHMARK:

@@ -61,8 +61,7 @@ class LoadersPipelines:
         symbols = AssetsProvider.get_sp500_symbols()
 
         from_time = datetime.now() - timedelta(days=days_back)
-        source = MongoDBSource(mongodb_storage, symbols, TimeSpan.Day, from_time)
-        return source
+        return MongoDBSource(mongodb_storage, symbols, TimeSpan.Day, from_time)
 
     @staticmethod
     def _build_technicals_base_processor_chain(bins_file_path: Optional[str] = None,
@@ -83,8 +82,7 @@ class LoadersPipelines:
 
         technical_normalizer = TechnicalsNormalizerProcessor(next_processor=latest_processor)
         technicals = TechnicalsProcessor(technical_normalizer)
-        timespan_change_processor = TimeSpanChangeProcessor(TimeSpan.Day, technicals)
-        return timespan_change_processor
+        return TimeSpanChangeProcessor(TimeSpan.Day, technicals)
 
     @staticmethod
     def build_technicals_calculator(days_back: int = DEFAULT_DAYS_BACK) -> PipelineRunner:

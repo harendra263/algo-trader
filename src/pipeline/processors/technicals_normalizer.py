@@ -51,8 +51,7 @@ class TechnicalsNormalizerProcessor(Processor):
                 normalized_value = self._normalize(latest_candles, indicator_name, indicator_value)
                 normalized_indicators.set(indicator_name, normalized_value)
 
-        correlation = self._get_normalized_correlation(asset_correlation)
-        if correlation:
+        if correlation := self._get_normalized_correlation(asset_correlation):
             normalized_indicators.set('correlation', correlation)
 
         candle.attachments.add_attachement(NORMALIZED_INDICATORS_ATTACHMENT_KEY, normalized_indicators)
@@ -61,23 +60,22 @@ class TechnicalsNormalizerProcessor(Processor):
 
     def _get_normalized_correlation(self, asset_correlation: AssetCorrelation) -> Optional[IndicatorValue]:
         if asset_correlation:
-            values = []
-            for key, v in asset_correlation.items():
-                values.append(v)
-
-            if values:
+            if values := [v for key, v in asset_correlation.items()]:
                 return numpy.average(values)
 
     def _normalize(self, latest_candles: List[Candle], field_name: str, value: IndicatorValue) -> IndicatorValue:
-        for prefix, normalizer in self.normalizers.items():
-            if field_name.startswith(prefix):
-                return normalizer(latest_candles, value)
-
-        return value
+        return next(
+            (
+                normalizer(latest_candles, value)
+                for prefix, normalizer in self.normalizers.items()
+                if field_name.startswith(prefix)
+            ),
+            value,
+        )
 
     @staticmethod
     def _normalize_close(candle: Candle, value: IndicatorValue) -> IndicatorValue:
-        if isinstance(value, tuple) or isinstance(value, list):
+        if isinstance(value, (tuple, list)):
             return [v / candle.close for v in value]
 
         return value / candle.close
@@ -85,7 +83,7 @@ class TechnicalsNormalizerProcessor(Processor):
     @staticmethod
     def _normalize_vwap(latest_candles: List[Candle], value: IndicatorValue) -> IndicatorValue:
         vwap = TechnicalsNormalizerProcessor._calculate_vwap(latest_candles)
-        if isinstance(value, tuple) or isinstance(value, list):
+        if isinstance(value, (tuple, list)):
             return [v / vwap for v in value]
 
         return value / vwap

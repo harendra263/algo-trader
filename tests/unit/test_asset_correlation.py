@@ -35,10 +35,7 @@ class TestAssetCorrelationProcessor(TestCase):
 
         merged: List[Candle] = []
         for i in range(len(x)):
-            merged.append(x[i])
-            merged.append(y[i])
-            merged.append(z[i])
-
+            merged.extend((x[i], y[i], z[i]))
         self.source = FakeSource(merged)
 
     def test_correlation(self):

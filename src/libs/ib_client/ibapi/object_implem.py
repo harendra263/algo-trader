@@ -9,6 +9,6 @@ class Object(object):
         return "Object"
 
     def __repr__(self):
-        return str(id(self)) + ": " + self.__str__()
+        return f"{id(self)}: {self.__str__()}"
 
   

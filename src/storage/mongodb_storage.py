@@ -24,8 +24,7 @@ class MongoDBStorage(StorageProvider):
                                              unique=True, background=True)
 
     def get_aggregated_history(self, from_timestamp: datetime, to_timestamp: datetime, groupby_fields: List[str],
-                               return_field: str, min_count: int, min_avg: float) -> \
-            List[Dict[str, int]]:
+                               return_field: str, min_count: int, min_avg: float) -> List[Dict[str, int]]:
         pipeline = [
             self._generate_history_match_clause(from_timestamp, to_timestamp, groupby_fields + [return_field]),
             self._generate_group_stage(groupby_fields, return_field),
@@ -33,11 +32,14 @@ class MongoDBStorage(StorageProvider):
         ]
 
         results = self.candles_collection.aggregate(pipeline, allowDiskUse=True)
-        matches: List[Dict[str, int]] = []
+        matches: List[Dict[str, int]] = [
+            {
+                MongoDBStorage._deserialize_group_field_name(field): value
+                for field, value in res['_id'].items()
+            }
+            for res in results
+        ]
 
-        for res in results:
-            matches.append(
-                {MongoDBStorage._deserialize_group_field_name(field): value for field, value in res['_id'].items()})
 
         return matches
 
@@ -45,7 +47,11 @@ class MongoDBStorage(StorageProvider):
     def _generate_history_match_clause(from_timestamp: datetime, to_timestamp: datetime,
                                        fields: List[str]) -> object:
         existing_fields_query = {field: {'$exists': True} for field in fields}
-        existing_fields_query.update({'timestamp': {"$gte": from_timestamp, "$lte": to_timestamp}})
+        existing_fields_query['timestamp'] = {
+            "$gte": from_timestamp,
+            "$lte": to_timestamp,
+        }
+
         return {'$match': existing_fields_query}
 
     @staticmethod

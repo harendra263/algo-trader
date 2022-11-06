@@ -11,5 +11,4 @@ class FakeSource(Source):
         self.candles.sort(key=lambda c: c.timestamp)
 
     def read(self) -> Iterator[Candle]:
-        for c in self.candles:
-            yield c
+        yield from self.candles

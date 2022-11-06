@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 def make_msg(text) -> bytes:
     """ adds the length prefix """
-    msg = struct.pack("!I%ds" % len(text), len(text), str.encode(text))
-    return msg
+    return struct.pack("!I%ds" % len(text), len(text), str.encode(text))
 
 
 def make_field(val) -> str:
@@ -33,8 +32,7 @@ def make_field(val) -> str:
     if type(val) is bool:
         val = int(val)
 
-    field = str(val) + '\0'
-    return field
+    return str(val) + '\0'
 
 
 def make_field_handle_empty(val) -> str:
@@ -52,13 +50,12 @@ def read_msg(buf:bytes) -> tuple:
     """ first the size prefix and then the corresponding msg payload """
     if len(buf) < 4:
         return (0, "", buf)
-    size = struct.unpack("!I", buf[0:4])[0]
+    size = struct.unpack("!I", buf[:4])[0]
     logger.debug("read_msg: size: %d", size)
-    if len(buf) - 4 >= size:
-        text = struct.unpack("!%ds" % size, buf[4:4+size])[0]
-        return (size, text, buf[4+size:])
-    else:
+    if len(buf) - 4 < size:
         return (size, "", buf)
+    text = struct.unpack("!%ds" % size, buf[4:4+size])[0]
+    return (size, text, buf[4+size:])
 
 
 def read_fields(buf:bytes) -> tuple:
@@ -69,7 +66,7 @@ def read_fields(buf:bytes) -> tuple:
     """ msg payload is made of fields terminated/separated by NULL chars """
     fields = buf.split(b"\0")
 
-    return tuple(fields[0:-1])   #last one is empty; this may slow dow things though, TODO
+    return tuple(fields[:-1])
 
 
 

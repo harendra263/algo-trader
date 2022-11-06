@@ -220,18 +220,18 @@ class Order(Object):
             self.totalQuantity,
             self.lmtPrice)
 
-        s += " %s" % self.tif
+        s += f" {self.tif}"
 
         if self.orderComboLegs:
             s += " CMB("
             for leg in self.orderComboLegs:
-                s += str(leg) + ","
+                s += f"{str(leg)},"
             s += ")"
 
         if self.conditions:
             s += " COND("
             for cond in self.conditions:
-                s += str(cond) + ","
+                s += f"{str(cond)},"
             s += ")"
 
         return s

@@ -22,12 +22,7 @@ class GenericCandleAttachment(Generic[T], Serializable, Deserializable):
         return self._data[key]
 
     def items(self) -> ItemsView[str, T]:
-        data = {}
-        for k, v in self._data.items():
-            if k == '__class__':
-                continue
-            data.update({k: v})
-
+        data = {k: v for k, v in self._data.items() if k != '__class__'}
         return data.items()
 
     @classmethod

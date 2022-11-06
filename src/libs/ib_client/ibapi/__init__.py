@@ -12,7 +12,6 @@ VERSION = {
 
 
 def get_version_string():
-    version = '{major}.{minor}.{micro}'.format(**VERSION)
-    return version
+    return '{major}.{minor}.{micro}'.format(**VERSION)
 
 __version__ = get_version_string()

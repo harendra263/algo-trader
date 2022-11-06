@@ -130,7 +130,7 @@ def main():
     import logging
     logging.debug("Using args %s", args)
     #print(args)
-                                                                                                                                           
+
     logging.debug("now is %s", datetime.datetime.now())
     logging.getLogger().setLevel(logging.ERROR)
 
@@ -187,7 +187,7 @@ def main():
     #app.reqHistoricalData(5001, contract, "20161215 16:00:00", "2 D",
     #                             "1 hour", "TRADES", 0, 1, []) 
     #app.cancelHistoricalData(5001)
-                                 
+
     #app.reqFundamentalData(6001, contract, "ReportSnapshot")
     #app.cancelFundamentalData(6001)
     #app.queryDisplayGroups(7001)

@@ -13,5 +13,4 @@ class ReverseSource(Source):
         candles = list(self.source.read())
         candles.reverse()
 
-        for c in candles:
-            yield c
+        yield from candles

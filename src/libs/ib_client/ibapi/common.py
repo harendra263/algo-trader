@@ -88,7 +88,7 @@ class NewsProvider(Object):
         self.name = ""
 
     def __str__(self):
-        return "Code: %s, Name: %s" % (self.code, self.name)
+        return f"Code: {self.code}, Name: {self.name}"
 
 class DepthMktDataDescription(Object):
     def __init__(self):
@@ -99,11 +99,8 @@ class DepthMktDataDescription(Object):
         self.aggGroup = UNSET_INTEGER
 
     def __str__(self):
-        if (self.aggGroup!= UNSET_INTEGER):
-            aggGroup = self.aggGroup
-        else:
-            aggGroup = ""
-        return "Exchange: %s, SecType: %s, ListingExchange: %s, ServiceDataType: %s, AggGroup: %s, " % (self.exchange, self.secType, self.listingExch,self.serviceDataType, aggGroup)
+        aggGroup = self.aggGroup if (self.aggGroup!= UNSET_INTEGER) else ""
+        return f"Exchange: {self.exchange}, SecType: {self.secType}, ListingExchange: {self.listingExch}, ServiceDataType: {self.serviceDataType}, AggGroup: {aggGroup}, "
 
 class SmartComponent(Object):
     def __init__(self):
@@ -145,7 +142,7 @@ class FamilyCode(Object):
         self.familyCodeStr = ""
 
     def __str__(self):
-        return "AccountId: %s, FamilyCodeStr: %s" % (self.accountID, self.familyCodeStr)
+        return f"AccountId: {self.accountID}, FamilyCodeStr: {self.familyCodeStr}"
 
 class PriceIncrement(Object):
     def __init__(self):

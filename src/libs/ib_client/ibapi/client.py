@@ -69,8 +69,7 @@ class EClient(object):
     def setConnState(self, connState):
         _connState = self.connState
         self.connState = connState
-        logger.debug("%s connState: %s -> %s" % (id(self), _connState,
-                                                 self.connState))
+        logger.debug(f"{id(self)} connState: {_connState} -> {self.connState}")
 
     def sendMsg(self, msg):
         full_msg = comm.make_msg(msg)
@@ -85,7 +84,7 @@ class EClient(object):
                 del prms['self']
             else:
                 prms = fnParams
-            logger.info("REQUEST %s %s" % (fnName, prms))
+            logger.info(f"REQUEST {fnName} {prms}")
 
 
     def startApi(self):
@@ -102,8 +101,8 @@ class EClient(object):
         VERSION = 2
 
         msg = make_field(OUT.START_API) \
-           + make_field(VERSION)    \
-           + make_field(self.clientId)
+               + make_field(VERSION)    \
+               + make_field(self.clientId)
 
         if self.serverVersion() >= MIN_SERVER_VER_OPTIONAL_CAPABILITIES:
             msg += make_field(self.optCapab)
@@ -203,8 +202,10 @@ class EClient(object):
         """Call this function to check if there is a connection with TWS"""
 
         connConnected = self.conn and self.conn.isConnected()
-        logger.debug("%s isConn: %s, connConnected: %s" % (id(self),
-            self.connState, str(connConnected)))
+        logger.debug(
+            f"{id(self)} isConn: {self.connState}, connConnected: {str(connConnected)}"
+        )
+
         return EClient.CONNECTED == self.connState and connConnected
 
     def keyboardInterrupt(self):
@@ -264,7 +265,7 @@ class EClient(object):
         VERSION = 1
 
         msg = make_field(OUT.REQ_CURRENT_TIME) \
-           + make_field(VERSION)
+               + make_field(VERSION)
 
         self.sendMsg(msg)
 
@@ -341,23 +342,41 @@ class EClient(object):
                                NOT_CONNECTED.msg())
             return
 
-        if self.serverVersion() < MIN_SERVER_VER_DELTA_NEUTRAL:
-            if contract.deltaNeutralContract:
-                self.wrapper.error(reqId, UPDATE_TWS.code(),
-                    UPDATE_TWS.msg() + "  It does not support delta-neutral orders.")
-                return
+        if (
+            self.serverVersion() < MIN_SERVER_VER_DELTA_NEUTRAL
+            and contract.deltaNeutralContract
+        ):
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support delta-neutral orders.",
+            )
 
-        if self.serverVersion() < MIN_SERVER_VER_REQ_MKT_DATA_CONID:
-            if contract.conId > 0:
-                self.wrapper.error(reqId, UPDATE_TWS.code(),
-                    UPDATE_TWS.msg() + "  It does not support conId parameter.")
-                return
+            return
 
-        if self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS:
-            if contract.tradingClass:
-                self.wrapper.error( reqId, UPDATE_TWS.code(),
-                    UPDATE_TWS.msg() + "  It does not support tradingClass parameter in reqMktData.")
-                return
+        if (
+            self.serverVersion() < MIN_SERVER_VER_REQ_MKT_DATA_CONID
+            and contract.conId > 0
+        ):
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support conId parameter.",
+            )
+
+            return
+
+        if (
+            self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS
+            and contract.tradingClass
+        ):
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support tradingClass parameter in reqMktData.",
+            )
+
+            return
 
         VERSION = 11
 
@@ -466,8 +485,12 @@ class EClient(object):
             return
 
         if self.serverVersion() < MIN_SERVER_VER_REQ_MARKET_DATA_TYPE:
-            self.wrapper.error(NO_VALID_ID, UPDATE_TWS.code(),
-                UPDATE_TWS.msg() + "  It does not support market data type requests.")
+            self.wrapper.error(
+                NO_VALID_ID,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support market data type requests.",
+            )
+
             return
 
         VERSION = 1
@@ -598,20 +621,29 @@ class EClient(object):
             return
 
         if self.serverVersion() < MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT:
-            self.wrapper.error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                    "  It does not support calculateImpliedVolatility req.")
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support calculateImpliedVolatility req.",
+            )
+
             return
 
-        if self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS:
-            if contract.tradingClass:
-                self.wrapper.error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                        "  It does not support tradingClass parameter in calculateImpliedVolatility.")
-                return
+        if (
+            self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS
+            and contract.tradingClass
+        ):
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support tradingClass parameter in calculateImpliedVolatility.",
+            )
 
-        VERSION = 3
+            return
 
         # send req mkt data msg
         flds = []
+        VERSION = 3
         flds += [make_field(OUT.REQ_CALC_IMPLIED_VOLAT),
             make_field(VERSION),
             make_field(reqId),
@@ -690,20 +722,29 @@ class EClient(object):
             return
 
         if self.serverVersion() < MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT:
-            self.wrapper.error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                    "  It does not support calculateImpliedVolatility req.")
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support calculateImpliedVolatility req.",
+            )
+
             return
 
-        if self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS:
-            if contract.tradingClass:
-                self.wrapper.error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                        "  It does not support tradingClass parameter in calculateImpliedVolatility.")
-                return
+        if (
+            self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS
+            and contract.tradingClass
+        ):
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support tradingClass parameter in calculateImpliedVolatility.",
+            )
 
-        VERSION = 3
+            return
 
         # send req mkt data msg
         flds = []
+        VERSION = 3
         flds += [make_field(OUT.REQ_CALC_OPTION_PRICE),
             make_field(VERSION),
             make_field(reqId),
@@ -788,11 +829,17 @@ class EClient(object):
             self.wrapper.error(reqId, NOT_CONNECTED.code(), NOT_CONNECTED.msg())
             return
 
-        if self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS:
-            if contract.tradingClass:
-                self.wrapper.error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
-                        "  It does not support conId, multiplier, tradingClass parameter in exerciseOptions.")
-                return
+        if (
+            self.serverVersion() < MIN_SERVER_VER_TRADING_CLASS
+            and contract.tradingClass
+        ):
+            self.wrapper.error(
+                reqId,
+                UPDATE_TWS.code(),
+                f"{UPDATE_TWS.msg()}  It does not support conId, multiplier, tradingClass parameter in exerciseOptions.",
+            )
+
+            return
 
         VERSION = 2
 

@@ -97,14 +97,14 @@ class Contract(Object):
             str(self.includeExpired),
             str(self.secIdType),
             str(self.secId)))
-        s += "combo:" + self.comboLegsDescrip
+        s += f"combo:{self.comboLegsDescrip}"
 
         if self.comboLegs:
             for leg in self.comboLegs:
-                s += ";" + str(leg)
+                s += f";{str(leg)}"
 
         if self.deltaNeutralContract:
-            s += ";" + str(self.deltaNeutralContract)
+            s += f";{str(self.deltaNeutralContract)}"
 
         return s
 
@@ -154,47 +154,49 @@ class ContractDetails(Object):
         self.notes = ""
 
     def __str__(self):
-        s = ",".join((
-            str(self.contract),
-            str(self.marketName),
-            str(self.minTick),
-            str(self.orderTypes),
-            str(self.validExchanges),
-            str(self.priceMagnifier),
-            str(self.underConId),
-            str(self.longName),
-            str(self.contractMonth),
-            str(self.industry),
-            str(self.category),
-            str(self.subcategory),
-            str(self.timeZoneId),
-            str(self.tradingHours),
-            str(self.liquidHours),
-            str(self.evRule),
-            str(self.evMultiplier),
-            str(self.mdSizeMultiplier),
-            str(self.underSymbol),
-            str(self.underSecType),
-            str(self.marketRuleIds),
-            str(self.aggGroup),
-            str(self.secIdList),
-            str(self.realExpirationDate),
-            str(self.cusip),
-            str(self.ratings),
-            str(self.descAppend),
-            str(self.bondType),
-            str(self.couponType),
-            str(self.callable),
-            str(self.putable),
-            str(self.coupon),
-            str(self.convertible),
-            str(self.maturity),
-            str(self.issueDate),
-            str(self.nextOptionDate),
-            str(self.nextOptionType),
-            str(self.nextOptionPartial),
-            str(self.notes)))
-        return s
+        return ",".join(
+            (
+                str(self.contract),
+                str(self.marketName),
+                str(self.minTick),
+                str(self.orderTypes),
+                str(self.validExchanges),
+                str(self.priceMagnifier),
+                str(self.underConId),
+                str(self.longName),
+                str(self.contractMonth),
+                str(self.industry),
+                str(self.category),
+                str(self.subcategory),
+                str(self.timeZoneId),
+                str(self.tradingHours),
+                str(self.liquidHours),
+                str(self.evRule),
+                str(self.evMultiplier),
+                str(self.mdSizeMultiplier),
+                str(self.underSymbol),
+                str(self.underSecType),
+                str(self.marketRuleIds),
+                str(self.aggGroup),
+                str(self.secIdList),
+                str(self.realExpirationDate),
+                str(self.cusip),
+                str(self.ratings),
+                str(self.descAppend),
+                str(self.bondType),
+                str(self.couponType),
+                str(self.callable),
+                str(self.putable),
+                str(self.coupon),
+                str(self.convertible),
+                str(self.maturity),
+                str(self.issueDate),
+                str(self.nextOptionDate),
+                str(self.nextOptionType),
+                str(self.nextOptionPartial),
+                str(self.notes),
+            )
+        )
 
 
 class ContractDescription(Object):

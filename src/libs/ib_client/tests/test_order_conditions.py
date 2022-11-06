@@ -3,6 +3,7 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
  and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable.
 """
 
+
 import unittest
 
 from ibapi.order_condition import *
@@ -25,6 +26,6 @@ class ConditionOrderTestCase(unittest.TestCase):
         print(cond, OrderCondition.__str__(cond))
 
 
-if "__main__" == __name__:
+if __name__ == "__main__":
     unittest.main()
  
