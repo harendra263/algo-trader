@@ -102,8 +102,7 @@ class InteractiveBrokersConnector(AsyncMarketProvider, EWrapper, EClient):
     @iswrapper
     def error(self, reqId: TickerId, errorCode: int, errorString: str):
         super().error(reqId, errorCode, errorString)
-        sub = self._resolve_subscription(reqId)
-        if sub:
+        if sub := self._resolve_subscription(reqId):
             sub.done(True)
 
     @iswrapper

@@ -71,7 +71,11 @@ def decode(the_type, fields, show_unset = False):
         elif type(s) is bytes:
             return s.decode(errors='backslashreplace')
         else:
-            raise TypeError("unsupported incoming type " + type(s) + " for desired type 'str")
+            raise TypeError(
+                f"unsupported incoming type {type(s)}"
+                + " for desired type 'str"
+            )
+
 
     orig_type = the_type
     if the_type is bool:
@@ -84,14 +88,14 @@ def decode(the_type, fields, show_unset = False):
             elif the_type is int:
                 n = UNSET_INTEGER
             else:
-                raise TypeError("unsupported desired type for empty value" + the_type)
+                raise TypeError(f"unsupported desired type for empty value{the_type}")
         else:
             n = the_type(s)
     else:
         n = the_type(s or 0)
 
     if orig_type is bool:
-        n = False if n == 0 else True
+        n = n != 0
 
     return n
 
@@ -104,7 +108,7 @@ def ExerciseStaticMethods(klass):
     for (_, var) in inspect.getmembers(klass):
         #print(name, var, type(var))
         if type(var) == types.FunctionType:
-            print("Exercising: %s:" % var)
+            print(f"Exercising: {var}:")
             print(var())
             print()
 

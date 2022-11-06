@@ -51,11 +51,12 @@ class TechnicalsBinner(Terminator):
         for indicator, values in self.values.items():
             if isinstance(values[0], float):
                 self.bins.add(indicator, self._get_single_float_bins(values))
-            elif isinstance(values[0], list) or isinstance(values[0], Tuple):
+            elif isinstance(values[0], (list, Tuple)):
                 list_size = len(values[0])
-                bins: List[List[Bucket]] = []
-                for i in range(list_size):
-                    bins.append(self._get_single_float_bins([v[i] for v in values]))
+                bins: List[List[Bucket]] = [
+                    self._get_single_float_bins([v[i] for v in values])
+                    for i in range(list_size)
+                ]
 
                 self.bins.add(indicator, bins)
 
@@ -69,8 +70,14 @@ class TechnicalsBinner(Terminator):
 
         bins: List[Bucket] = [Bucket(ident=0, end=values[0])]
 
-        for i in range(0, len(values), step_size):
-            bins.append(Bucket(ident=len(bins), start=values[i], end=values[min(i + step_size, len(values) - 1)]))
+        bins.extend(
+            Bucket(
+                ident=len(bins),
+                start=values[i],
+                end=values[min(i + step_size, len(values) - 1)],
+            )
+            for i in range(0, len(values), step_size)
+        )
 
         bins.append(Bucket(ident=len(bins), start=values[len(values) - 1]))
 

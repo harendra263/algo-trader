@@ -23,6 +23,6 @@ class EnumTestCase(unittest.TestCase):
         print(e.to_str(e.ZERO))
 
 
-if "__main__" == __name__:
+if __name__ == "__main__":
     unittest.main()
               

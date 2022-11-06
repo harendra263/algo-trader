@@ -55,9 +55,7 @@ class AssetCorrelationProcessor(Processor):
         cache_reader = CandleCache.context_reader(context)
         asset_correlation = AssetCorrelation()
 
-        group_symbols = self._get_symbol_group(symbol)
-
-        if group_symbols:
+        if group_symbols := self._get_symbol_group(symbol):
             current_symbol_candles = cache_reader.get_symbol_candles(symbol) or []
             current_symbol_values = self._get_correlation_measurable_values(current_symbol_candles)
 

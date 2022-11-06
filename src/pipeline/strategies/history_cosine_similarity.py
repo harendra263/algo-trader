@@ -24,7 +24,7 @@ class HistoryCosineSimilarityStrategy(Strategy):
 
     def process(self, context: SharedContext, candle: Candle) -> List[StrategySignal]:
         indicators_buckets: IndicatorsMatchedBuckets = \
-            candle.attachments.get_attachment(INDICATORS_MATCHED_BUCKETS_ATTACHMENT_KEY)
+                candle.attachments.get_attachment(INDICATORS_MATCHED_BUCKETS_ATTACHMENT_KEY)
 
         candle_values: list[int] = []
         for indicator in self.indicators_to_compare:
@@ -34,9 +34,12 @@ class HistoryCosineSimilarityStrategy(Strategy):
             candle_values.append(indicators_buckets.get(indicator).ident)
 
         for matcher in self.matchers:
-            matcher_values: list[int] = []
-            for indicator in self.indicators_to_compare:
-                matcher_values.append(matcher[f'attachments.indicators_matched_buckets.{indicator}.ident'])
+            matcher_values: list[int] = [
+                matcher[
+                    f'attachments.indicators_matched_buckets.{indicator}.ident'
+                ]
+                for indicator in self.indicators_to_compare
+            ]
 
             result = 1 - spatial.distance.cosine(candle_values, matcher_values)
             if result > 0.997:

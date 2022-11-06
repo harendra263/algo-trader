@@ -21,7 +21,7 @@ class CommTestCase(unittest.TestCase):
         text = "ABCD"
         msg = comm.make_msg(text)
 
-        size = struct.unpack("!I", msg[0:4])[0]
+        size = struct.unpack("!I", msg[:4])[0]
 
         self.assertEqual(size, len(text), "msg size not good")
         self.assertEqual(msg[4:].decode(), text, "msg payload not good")
@@ -32,8 +32,8 @@ class CommTestCase(unittest.TestCase):
         field = comm.make_field(text)
 
         self.assertEqual(field[-1], "\0", "terminator not good")
-        self.assertEqual(len(field[0:-1]), len(text), "payload size not good")
-        self.assertEqual(field[0:-1], text, "payload not good")
+        self.assertEqual(len(field[:-1]), len(text), "payload size not good")
+        self.assertEqual(field[:-1], text, "payload not good")
 
 
     def test_read_msg(self):
@@ -52,7 +52,7 @@ class CommTestCase(unittest.TestCase):
         text2 = "123"
 
         msg = comm.make_msg(comm.make_field(text1) + comm.make_field(text2))
-                
+
         (size, text, rest) = comm.read_msg(msg)
         fields = comm.read_fields(text)
 
@@ -61,6 +61,6 @@ class CommTestCase(unittest.TestCase):
         self.assertEqual(fields[1].decode(), text2)        
 
 
-if "__main__" == __name__:
+if __name__ == "__main__":
     unittest.main()
         

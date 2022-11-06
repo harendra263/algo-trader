@@ -26,9 +26,7 @@ class BucketsContainer(Serializable, Deserializable):
         data = super().serialize()
         for key, value in self.bins.items():
             if isinstance(value[0], list):
-                data[key] = []
-                for arr in value:
-                    data[key].append([x.serialize() for x in arr])
+                data[key] = [[x.serialize() for x in arr] for arr in value]
             elif isinstance(value[0], Bucket):
                 data[key] = [x.serialize() for x in value]
 
@@ -42,10 +40,7 @@ class BucketsContainer(Serializable, Deserializable):
                 continue
 
             if isinstance(value[0], list):
-                lists = []
-                for lst in value:
-                    lists.append([DeserializationService.deserialize(x) for x in lst])
-
+                lists = [[DeserializationService.deserialize(x) for x in lst] for lst in value]
                 bins.add(key, lists)
             else:
                 bins.add(key, [DeserializationService.deserialize(x) for x in value])

@@ -37,8 +37,7 @@ class CandleCacheContextReader:
             return data[symbol]
 
     def get_symbols_list(self) -> Optional[List[str]]:
-        data = self.context.get_kv_data(CONTEXT_IDENT)
-        if data:
+        if data := self.context.get_kv_data(CONTEXT_IDENT):
             return list(data.keys())
 
 

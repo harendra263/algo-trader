@@ -26,8 +26,7 @@ class InMemoryStorage(StorageProvider):
 
         def all_candles() -> Iterator[Candle]:
             for sym_candles in self.candles.values():
-                for c in sym_candles:
-                    yield c
+                yield from sym_candles
 
         return list(filter(lambda candle:
                            candle.time_span == time_span and

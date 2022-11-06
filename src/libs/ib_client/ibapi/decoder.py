@@ -35,9 +35,7 @@ class HandleInfo(Object):
             raise ValueError("both wrap and proc can't be None")
 
     def __str__(self):
-        s = "wrap:%s meth:%s prms:%s" % (self.wrapperMeth,
-                self.processMeth, self.wrapperParams)
-        return s
+        return f"wrap:{self.wrapperMeth} meth:{self.processMeth} prms:{self.wrapperParams}"
 
 
 class Decoder(Object):
@@ -127,7 +125,7 @@ class Decoder(Object):
     def processOpenOrder(self, fields):
 
         next(fields)
-        
+
         order = Order()
         contract = Contract()
         orderState = OrderState()
@@ -137,7 +135,7 @@ class Decoder(Object):
         else:
             version = self.serverVersion
 
-        
+
         OrderDecoder.__init__(self, contract, order, orderState, version, self.serverVersion)
 
         # read orderId
@@ -263,10 +261,7 @@ class Decoder(Object):
         next(fields)
         version = decode(int, fields)
 
-        reqId = -1
-        if version >= 3:
-            reqId = decode(int, fields)
-
+        reqId = decode(int, fields) if version >= 3 else -1
         contract = ContractDetails()
         contract.contract.symbol = decode(str, fields)
         contract.contract.secType = decode(str, fields)
@@ -333,10 +328,7 @@ class Decoder(Object):
         next(fields)
         version = decode(int, fields)
 
-        reqId = -1
-        if version >= 3:
-            reqId = decode(int, fields)
-
+        reqId = decode(int, fields) if version >= 3 else -1
         contract = ContractDetails()
         contract.contract.symbol = decode(str, fields)
         contract.contract.secType = decode(str, fields)
@@ -428,10 +420,7 @@ class Decoder(Object):
         if(self.serverVersion < MIN_SERVER_VER_LAST_LIQUIDITY):
             version = decode(int, fields)
 
-        reqId = -1
-        if version >= 7:
-            reqId = decode(int, fields)
-
+        reqId = decode(int, fields) if version >= 7 else -1
         orderId = decode(int, fields)
 
         # decode contract fields
@@ -572,8 +561,8 @@ class Decoder(Object):
             delta = None
 
         if version >= 6 or \
-            tickTypeInt == TickTypeEnum.MODEL_OPTION or \
-                        tickTypeInt == TickTypeEnum.DELAYED_MODEL_OPTION:
+                tickTypeInt == TickTypeEnum.MODEL_OPTION or \
+                            tickTypeInt == TickTypeEnum.DELAYED_MODEL_OPTION:
 
             optPrice = decode(float, fields)
             pvDividend = decode(float, fields)
@@ -666,10 +655,7 @@ class Decoder(Object):
         else:
             position = decode(int, fields)
 
-        avgCost = 0.
-        if version >= 3:
-            avgCost = decode(float, fields)
-
+        avgCost = decode(float, fields) if version >= 3 else 0.
         self.wrapper.position(account, contract, position, avgCost)
 
 
@@ -1036,7 +1022,7 @@ class Decoder(Object):
         if tickType == 0:
             # None
             pass
-        elif tickType == 1 or tickType == 2:
+        elif tickType in [1, 2]:
             # Last or AllLast
             price = decode(float, fields)
             size = decode(int, fields)
@@ -1199,15 +1185,16 @@ class Decoder(Object):
     ######################################################################
 
     def discoverParams(self):
-        meth2handleInfo = {}
-        for handleInfo in self.msgId2handleInfo.values():
-            meth2handleInfo[handleInfo.wrapperMeth] = handleInfo
+        meth2handleInfo = {
+            handleInfo.wrapperMeth: handleInfo
+            for handleInfo in self.msgId2handleInfo.values()
+        }
 
         methods = inspect.getmembers(EWrapper, inspect.isfunction)
         for (_, meth) in methods:
             #logger.debug("meth %s", name)
             sig = inspect.signature(meth)
-            handleInfo = meth2handleInfo.get(meth, None)
+            handleInfo = meth2handleInfo.get(meth)
             if handleInfo is not None:
                 handleInfo.wrapperParams = sig.parameters
 

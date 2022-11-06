@@ -22,7 +22,6 @@ class IBHistorySource(Source):
         for symbol in self.symbols:
             try:
                 result = self.marketProvider.request_symbol_history(symbol, self.timespan, self.from_time, self.to_time)
-                for candle in result.result():
-                    yield candle
+                yield from result.result()
             except Exception as ex:
                 logging.warning(f'Failed to fetch symbol {symbol} history. Error: {ex}')

@@ -35,8 +35,7 @@ class TechnicalsBucketsMatcher(Processor):
         matched_buckets = IndicatorsMatchedBuckets()
 
         for indicator, value in normalized_indicators.items():
-            bins = self.bins.get(indicator)
-            if bins:
+            if bins := self.bins.get(indicator):
                 if isinstance(bins[0], list):
                     match = self._indicator_list_match(value, bins)
                 else:

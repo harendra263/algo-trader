@@ -25,7 +25,7 @@ class HistoryBucketCompareStrategy(Strategy):
 
     def process(self, context: SharedContext, candle: Candle) -> List[StrategySignal]:
         indicators_buckets: IndicatorsMatchedBuckets = \
-            candle.attachments.get_attachment(INDICATORS_MATCHED_BUCKETS_ATTACHMENT_KEY)
+                candle.attachments.get_attachment(INDICATORS_MATCHED_BUCKETS_ATTACHMENT_KEY)
 
         candle_buckets_map: Dict[str, int] = {}
         for indicator in self.indicators_to_compare:
@@ -36,10 +36,10 @@ class HistoryBucketCompareStrategy(Strategy):
                 indicator).ident
 
         for matcher in self.matchers:
-            match = True
-            for candle_ind, candle_val in candle_buckets_map.items():
-                if matcher[candle_ind] != candle_val:
-                    match = False
+            match = all(
+                matcher[candle_ind] == candle_val
+                for candle_ind, candle_val in candle_buckets_map.items()
+            )
 
             if match:
                 return [StrategySignal(candle.symbol, SignalDirection.Long)]

@@ -26,7 +26,4 @@ class TimeSpanChangeProcessor(Processor):
         super().process(context, candle)
 
     def _is_diff(self, one: datetime, other: datetime) -> bool:
-        if self.timespan == TimeSpan.Day:
-            return one.date() != other.date()
-        else:
-            return True
+        return one.date() != other.date() if self.timespan == TimeSpan.Day else True

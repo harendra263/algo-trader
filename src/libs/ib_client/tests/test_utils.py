@@ -50,6 +50,6 @@ class UtilsTestCase(unittest.TestCase):
         #import code; code.interact(local=locals())
 
  
-if "__main__" == __name__:
+if __name__ == "__main__":
     unittest.main()
               

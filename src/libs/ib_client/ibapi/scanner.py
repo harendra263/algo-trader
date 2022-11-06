@@ -51,7 +51,5 @@ class ScannerSubscription(Object):
 
 
     def __str__(self):
-        s = "Instrument: %s, LocationCode: %s, ScanCode: %s" % (self.instrument, self.locationCode, self.scanCode)
-
-        return s
+        return f"Instrument: {self.instrument}, LocationCode: {self.locationCode}, ScanCode: {self.scanCode}"
 

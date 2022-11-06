@@ -14,4 +14,4 @@ class SoftDollarTier(Object):
         self.displayName = displayName
 
     def __str__(self):
-        return "Name: %s, Value: %s, DisplayName: %s" % (self.name, self.val, self.displayName)
+        return f"Name: {self.name}, Value: {self.val}, DisplayName: {self.displayName}"

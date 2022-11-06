@@ -11,7 +11,4 @@ class SharedContext(Generic[T]):
         self._kv_store[key] = value
 
     def get_kv_data(self, key: str, default: object = None) -> Optional[T]:
-        if key in self._kv_store:
-            return self._kv_store[key]
-
-        return default
+        return self._kv_store[key] if key in self._kv_store else default
